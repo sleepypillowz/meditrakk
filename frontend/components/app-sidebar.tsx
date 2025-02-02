@@ -1,6 +1,4 @@
 import { LayoutDashboard, Users, ClipboardPlus, Calendar, Clock, ClipboardPenLine, Bandage, ChartArea, HelpCircle, Settings, Database, UserPlus  } from "lucide-react"
-
-
 import {
   Sidebar,
   SidebarContent,
@@ -43,8 +41,8 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Queueing",
-    url: "/admin/queue",
+    title: "Registration Queue",
+    url: "/admin/registration-queue",
     icon: Clock,
   },
   {

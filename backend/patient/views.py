@@ -3,10 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PatientSerializer, PatientRegistrationSerializer
-
-
-from django.views.decorators.csrf import csrf_exempt
-import json
 from queueing.models import Patient, TemporaryStorageQueue
 from datetime import datetime
 
