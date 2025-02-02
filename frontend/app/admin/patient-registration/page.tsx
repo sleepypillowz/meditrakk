@@ -7,48 +7,74 @@ export default function Page() {
     first_name: "",
     middle_name: "",
     last_name: "",
-    phone: "",
+    phone_number: "",
     email: "",
     date_of_birth: "",
     complaint: "general_illness",
+    priority: "Regular",
     street_address: "",
     barangay: "",
     municipal_city: "",
     agree_terms: false,
   });
+  const [successMessage, setSuccessMessage] = useState("");  // Success message state
+  const [errorMessage, setErrorMessage] = useState("");  // Error message state
 
   // Handle input change
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value, type, checked } = event.target as HTMLInputElement;
-
-    setFormData((prevData: any) => ({
+    const { id, value } = event.target;
+  
+    setFormData((prevData) => ({
       ...prevData,
-      [id]: type === "checkbox" ? checked : value,
+      [id]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
+    console.log("Form Data being sent:", formData);
+  
     try {
-      const response = await fetch('http://127.0.0.1:8000/patient/patient-register', {
+      const response = await fetch('http://127.0.0.1:8000/patient/patient-register/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+  
+      // Log the response status and response body for debugging
+      const responseBody = await response.json();
+      console.log("Response Body:", responseBody);
+      
+      if (response.ok) {
+        setSuccessMessage("Successfully registered!");  // Set success message
+        setErrorMessage("");  // Clear any previous error message
+        setFormData({
+          first_name: "",
+          middle_name: "",
+          last_name: "",
+          phone_number: "",
+          email: "",
+          date_of_birth: "",
+          complaint: "general_illness",
+          priority: "Regular",
+          street_address: "",
+          barangay: "",
+          municipal_city: "",
+          agree_terms: false,
+        });
+        
       }
-
-      const result = await response.json();
-      console.log("Patient registered:", result);
+  
+      console.log("Patient registered:", responseBody);
     } catch (error) {
       console.error("Error registering patient:", error);
     }
   };
+  
+  
 
   return (
     <div className="flex-1 px-4 pt-32 sm:px-6 lg:px-8">
@@ -101,8 +127,8 @@ export default function Page() {
             </label>
             <input
               type="tel"
-              id="phone"
-              value={formData.phone}
+              id="phone_number"
+              value={formData.phone_number}
               onChange={handleChange}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
               placeholder="Enter your number"
@@ -140,6 +166,7 @@ export default function Page() {
           />
         </div>
 
+        
         {/* Address Fields */}
         <div className="mb-6">
           <label htmlFor="street_address" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -185,6 +212,41 @@ export default function Page() {
             required
           />
         </div>
+          {/* Complaint Choice */}
+          <div className="mb-6">
+          <label htmlFor="complaint" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+            Type of Complaint
+          </label>
+          <select
+            id="complaint"
+            value={formData.complaint}
+            onChange={handleChange}
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            required
+          >
+            <option value="general_illness">General Illness</option>
+            <option value="injury">Injury</option>
+            <option value="checkup">Check-up</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        {/* Priority Choice */}
+        <div className="mb-6">
+          <label htmlFor="priority" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+            Priority
+          </label>
+          <select
+            id="priority"
+            value={formData.priority}
+            onChange={handleChange}
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+            required
+          >
+            <option value="Regular">Regular</option>
+            <option value="Priority">Priority Lane (PWD/Pregnant)</option>
+          </select>
+        </div>
 
         {/* Terms and Conditions */}
         <div className="mb-6 flex items-start">
@@ -214,6 +276,19 @@ export default function Page() {
           Submit
         </button>
       </form>
+      {/* Success Message */}
+      {successMessage && (
+        <div style={{ color: "green", marginTop: "10px" }}>
+          {successMessage}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {errorMessage && (
+        <div style={{ color: "red", marginTop: "10px" }}>
+          {errorMessage}
+        </div>
+      )}
     </div>
   );
 }
