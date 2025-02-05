@@ -1,4 +1,5 @@
-import { LayoutDashboard, Users, ClipboardPlus, Calendar, Clock, ClipboardPenLine, Bandage, ChartArea, HelpCircle, Settings, Database, UserPlus  } from "lucide-react"
+import { LayoutDashboard, Users, ClipboardPlus, Calendar, Clock, ClipboardPenLine, Bandage, ChartArea, HelpCircle, Settings, Database,UserPlus } from "lucide-react"
+
 import {
   Sidebar,
   SidebarContent,
@@ -6,11 +7,13 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { NavUser } from "./nav-user"
+import Image from "next/image";
 
 
 // Menu items.
@@ -47,12 +50,12 @@ const items = [
   },
   {
     title: "Assessment",
-    url: "/admin/assessment",
+    url: "/admin/patient-assessment-queue",
     icon: ClipboardPenLine,
   },
   {
     title: "Treatment",
-    url: "/admin/treatment",
+    url: "/admin/patient-treatment",
     icon: Bandage,
   },
   {
@@ -61,8 +64,8 @@ const items = [
     icon: LayoutDashboard,
   },
   {
-    title: "Medicine Inventory",
-    url: "/admin/medicine-inventory",
+    title: "Medicine",
+    url: "/admin/medicine",
     icon: Database,
   },
   {
@@ -92,9 +95,18 @@ const data = {
 export function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader>
+        <div className="flex">
+          <span className="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
+            <Image className="aspect-square h-full w-full" src="/logo.png" alt="logo" width={64} height={64} />
+          </span>
+          <h1 className="ms-2 text-2xl">MediTrakk</h1>
+        </div>
+
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Malibiran Medical Clinic</SidebarGroupLabel>
+          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

@@ -1,6 +1,7 @@
 
 from datetime import datetime, date
 from rest_framework import serializers
+from .models import Patient
 
 class PatientSerializer(serializers.Serializer):
     patient_id = serializers.CharField(max_length=8)
@@ -54,10 +55,22 @@ class PatientSerializer(serializers.Serializer):
            except ValueError:
                 return None
         return None
-from rest_framework import serializers
-from .models import Patient
 
 class PatientRegistrationSerializer(serializers.ModelSerializer):
+    priority = serializers.ChoiceField(choices=[('Regular', 'Regular'), ('Priority', 'Priority')], default='Regular')  # Add priority field
+
     class Meta:
         model = Patient
-        fields = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'complaint', 'street_address', 'barangay', 'municipal_city']
+        fields = ['first_name', 'middle_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'complaint', 'street_address', 'barangay', 'municipal_city', 'priority_level']  # Add priority field here
+
+    def get_queue_data(self, obj):
+        """Fetch queue data for the patient."""
+        queue_info = obj.temporarystoragequeue_set.filter(status='Waiting').first()  # Adjust as per your model relations
+        if queue_info:
+            return {
+                'id': queue_info.id,
+                'priority_level': queue_info.priority_level,
+                'status': queue_info.status,
+                'created_at': queue_info.created_at,
+            }
+        return None

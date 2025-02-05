@@ -10,6 +10,7 @@ class TemporaryStorageQueue(models.Model):
         ('Priority', 'Priority Lane (PWD/Pregnant)')
     ]
 
+
     patient = models.OneToOneField(Patient, on_delete=models.CASCADE, to_field='patient_id', related_name='temporarystoragequeue' )
     priority_level = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='Regular')
     created_at = models.DateTimeField(auto_now_add=True)

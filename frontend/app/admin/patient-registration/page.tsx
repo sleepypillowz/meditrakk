@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     first_name: "",
     middle_name: "",
@@ -11,25 +13,30 @@ export default function Page() {
     email: "",
     date_of_birth: "",
     complaint: "general_illness",
-    priority: "Regular",
+    priority: "Regular", // Move this directly to formData
     street_address: "",
     barangay: "",
     municipal_city: "",
     agree_terms: false,
   });
-  const [successMessage, setSuccessMessage] = useState("");  // Success message state
-  const [errorMessage, setErrorMessage] = useState("");  // Error message state
+  const [showModal, setShowModal] = useState(false);
 
-  // Handle input change
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value } = event.target;
-  
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    const { id, value, type } = event.target;
+    
+    // Type narrowing for checkbox
+    if (type === "checkbox") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: (event.target as HTMLInputElement).checked, // Safely access checked
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }));
+    }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -44,28 +51,26 @@ export default function Page() {
         body: JSON.stringify(formData),
       });
   
-      // Log the response status and response body for debugging
       const responseBody = await response.json();
       console.log("Response Body:", responseBody);
       
       if (response.ok) {
-        setSuccessMessage("Successfully registered!");  // Set success message
-        setErrorMessage("");  // Clear any previous error message
-        setFormData({
-          first_name: "",
-          middle_name: "",
-          last_name: "",
-          phone_number: "",
-          email: "",
-          date_of_birth: "",
-          complaint: "general_illness",
-          priority: "Regular",
-          street_address: "",
-          barangay: "",
-          municipal_city: "",
-          agree_terms: false,
-        });
-        
+        // Reset form data including priority and complaint directly
+        // setFormData({
+        //   first_name: "",
+        //   middle_name: "",
+        //   last_name: "",
+        //   phone_number: "",
+        //   email: "",
+        //   date_of_birth: "",
+        //   complaint: "general_illness",
+        //   priority: "Regular", // Reset priority here directly
+        //   street_address: "",
+        //   barangay: "",
+        //   municipal_city: "",
+        //   agree_terms: false,
+        // });
+        setShowModal(true);  // Show the popup
       }
   
       console.log("Patient registered:", responseBody);
@@ -73,8 +78,6 @@ export default function Page() {
       console.error("Error registering patient:", error);
     }
   };
-  
-  
 
   return (
     <div className="flex-1 px-4 pt-32 sm:px-6 lg:px-8">
@@ -166,7 +169,6 @@ export default function Page() {
           />
         </div>
 
-        
         {/* Address Fields */}
         <div className="mb-6">
           <label htmlFor="street_address" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
@@ -212,8 +214,9 @@ export default function Page() {
             required
           />
         </div>
-          {/* Complaint Choice */}
-          <div className="mb-6">
+
+        {/* Complaint Choice */}
+        <div className="mb-6">
           <label htmlFor="complaint" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
             Type of Complaint
           </label>
@@ -243,8 +246,9 @@ export default function Page() {
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
             required
           >
-            <option value="Regular">Regular</option>
-            <option value="Priority">Priority Lane (PWD/Pregnant)</option>
+          <option value="Regular">Regular</option>
+          <option value="Priority">Priority Lane (PWD/Pregnant)</option>
+
           </select>
         </div>
 
@@ -256,37 +260,48 @@ export default function Page() {
               type="checkbox"
               checked={formData.agree_terms}
               onChange={handleChange}
-              className="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300"
+              className="focus:ring-3 h-4 w-4 rounded border-gray-300 text-blue-600 ring-offset-gray-100"
               required
             />
           </div>
-          <label htmlFor="agree_terms" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-            I agree with the{" "}
-            <a href="#" className="text-blue-600 hover:underline dark:text-blue-500">
-              terms and conditions
-            </a>
-            .
-          </label>
+          <div className="ml-2 text-sm">
+            <label htmlFor="agree_terms" className="font-medium text-gray-900 dark:text-white">
+              I agree to the terms and conditions
+            </label>
+          </div>
         </div>
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-sky-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-sky-800 focus:outline-none focus:ring-4 focus:ring-sky-300"
+          className="w-full rounded-lg bg-blue-500 p-2.5 text-center text-sm font-medium text-white focus:outline-none hover:bg-blue-700"
         >
-          Submit
+          Register Patient
         </button>
       </form>
-      {/* Success Message */}
-      {successMessage && (
-        <div style={{ color: "green", marginTop: "10px" }}>
-          {successMessage}
-        </div>
-      )}
 
-      {/* Error Message */}
-      {errorMessage && (
-        <div style={{ color: "red", marginTop: "10px" }}>
-          {errorMessage}
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-1/3 bg-white p-4 rounded-lg">
+            <h2 className="text-xl font-semibold">Patient Registered Successfully!</h2>
+            <div className="mt-4 flex justify-around">
+              <button
+                className="text-blue-500"
+                onClick={() => {
+                  setShowModal(false);
+                  //setFormData({ ...formData, priority: "Regular" });  // reset priority explicitly
+                }}
+              >
+                Add New Patient
+              </button>
+              <button
+                className="text-blue-500"
+                onClick={() => router.push('/admin/registration-queue')}
+              >
+                Go to Registration Queue
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

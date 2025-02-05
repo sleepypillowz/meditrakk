@@ -1,24 +1,7 @@
-"use client"
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react"; 
-
 
 export default function Page() {
-  const [priorityQueue, setPriorityQueue] = useState([]);
-  const [regularQueue, setRegularQueue] = useState([]);
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/queueing/registration_queueing/")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API Response:", data); 
-        setPriorityQueue(data.priority_queue);
-        setRegularQueue(data.regular_queue);
-      })
-      .catch((error) => console.error("Error fetching queue:", error));
-  }, []);
-
   return (
     <div className="flex-1 px-8 py-8">
       <div className="flex flex-row justify-center gap-4">
@@ -46,7 +29,6 @@ export default function Page() {
           <div className="card flex w-96 max-w-sm flex-col rounded-lg">
             <p className="mb-2 text-lg font-semibold tracking-tight">Patient Information</p>
             <div className="flex">
-
               <p>
                 <span>Name: </span>Juan Dela Cruz
               </p>
@@ -57,9 +39,10 @@ export default function Page() {
 
             <hr className="mt-2"></hr>
 
-            <p className="my-2 text-lg font-semibold tracking-tight">Additional </p>
+            <p className="my-2 text-lg font-semibold tracking-tight">Assessment</p>
+
             <p>
-              <span>Phone number: </span>Checkup
+              <span>Blood Pressure: </span>120/30
             </p>
             <p>
               <span>Reason: </span>Checkup
@@ -117,9 +100,10 @@ export default function Page() {
 
             <hr className="mt-2"></hr>
 
-            <p className="my-2 text-lg font-semibold tracking-tight">Additional Information</p>
+            <p className="my-2 text-lg font-semibold tracking-tight">Assessment</p>
+
             <p>
-              <span>Phone number: </span>Checkup
+              <span>Blood Pressure: </span>120/30
             </p>
             <p>
               <span>Reason: </span>Checkup
